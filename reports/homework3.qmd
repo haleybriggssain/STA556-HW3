@@ -1,0 +1,194 @@
+---
+title: "STA 556 Homework 3"
+author: "Haley Briggs"
+format: html
+jupyter: python3
+---
+
+# Part 1
+
+## 1.1 Introduction
+
+The dataset, 'housing', contains the predictors 'size_sqft', 'bedrooms', and 'age_years'
+and the response variable 'price-thousands'. The goal is to fit and diagnose a linear model
+that explains the price of houses based on the three predictors using matrix computation.
+
+## 1.2 Data Inspection and Validation
+
+```{python}
+import pandas as pd
+```
+
+### Load the CSV
+
+```{python}
+DATA_DIR = Path("../data")
+
+df = pd.read_csv(DATA_DIR / "raw" / "housing.csv")
+```
+
+### Report and Inspect
+
+Display the first five rows in the dataset:
+
+``` {python}
+df.head()
+```
+
+Inspect the number of rows and the number of columns contained in the dataset (number
+of rows, number of columns). There are 130 rows and 5 columns (`{python} df.shape`).
+
+``` {python}
+df.shape
+```
+
+Show the data types of each of the five columns. All the columns are classified as numerical
+values. The 'id' and 'bedrooms' columns are integers while the 'size_sqft', 'age_years', and
+'price_thousands' are floats.
+
+``` {python}
+df.dtypes
+```
+
+Display the number of missing values within each of the five columns. There are no missing values
+in any of the columns.
+
+``` {python}
+df.isna().sum()
+```
+
+Output 'False' if there are duplicates of ids (in the 'id' column) and 'True' if there are no
+duplicates. This identifies if there are multiple rows for a single individual (house).
+
+``` {python}
+df["id"].is_unique
+```
+
+## Written Response
+
+There are a total number of 130 observations with 5 columns that include 3 explanatory
+variables, 1 response variable, and 1 identifier column. There are 4 variables excluding the
+identifier column. There are no missing values, and all the IDs are unique.
+
+# Part 2
+
+``` {python}
+predictors = df[["size_sqft", "bedrooms", "age_years"]].to_numpy()
+y = df["price_thousands"].to_numpy()
+```
+
+### Standardize the Predictors
+
+``` {python}
+means = predictors.mean(axis=0)
+sds = predictors.std(axis=0)
+
+Z = (predictors- means) / sds
+```
+
+Mean across the predictors = `{python} print(Z.mean(axis=0))`
+Standard deviation across the predictors: `{python} print(Z.std(axis=0))`
+
+### Construct the Design matrix
+
+``` {python}
+X = np.column_stack([np.ones(len(Z)), Z])
+```
+
+The 'predictors' array (an array containing the values of each of the three explanatory variables
+for each observation) is 3-dimensional with 130 elements (`{python} predictors.shape`).
+
+``` {python}
+predictors.shape
+```
+
+The 'Z' array (an array containing the Z-scores of each explanatory variable for each observation)
+also is 3-dimensional with 130 elements (`{python} Z.shape`).
+
+``` {python}
+Z.shape
+```
+
+The 'X' array (an array that acts as the design matrix for the computations) is 4-dimensional
+with 130 elements (`{python} X.shape`). The extra dimension only contains 1s.
+
+``` {python}
+X.shape
+```
+
+The 'y' array (an array with the response values (price in thousands) for each observation) is
+1-dimensional with 130 elements (`{python} y.shape`).
+
+``` {python}
+y.shape
+```
+
+The matrix rank of X is `{python} print(np.linalg.matrix_rank(X))`.
+
+``` {python}
+np.linalg.matrix_rank(X)
+```
+
+There are three predictors excluding the intercept. This is clear when looking at the number of
+dimensions of 'predictors'.
+
+``` {python}
+predictors.shape
+```
+
+## Written Response
+
+X and y must have compatable shapes because they both represent the observed variable values
+(response variable values in y and predictor variable values in X) as elements, so the number of
+observations (number of elements) must match between X and y. The intercept column is necessary
+in X because X will be multiplied (as a matrix) by the beta matrix which includes the intercept
+beta (beta0). Standardizing the predictors puts all the predictors on a common scale without
+altering their relationship to the response or their distribution. Broadcasting allows the code
+to complete element-wise subtraction of the mean from the predictor values (predictor - mean) and
+division of the standard deviation (/ sds) in order to complete the same calculations without a
+loop.
+
+# Part 3
+
+### Fit the Model
+
+``` {python}
+beta_hat, *_ = np.linalg.lstsq(X, y, rcond = None)
+```
+
+Estimated Coefficients:
+Intercept coefficient = `{python} print(beta_hat[0])`
+size_sqft coefficient = `{python} print(beta_hat[1])`
+bedrooms coefficient = `{python} print(beta_hat[2])`
+age_years coefficient = `{python} print(beta_hat[3])`
+
+size_sqft has the largest absolute value coefficient (`{python} print(beta_hat[1])`).
+
+### Calculate Fitted Values and Residuals
+
+``` {python}
+fitted = X @ beta_hat
+residuals = y- fitted
+rmse = np.sqrt(np.mean(residuals ** 2))
+```
+
+The mean of the residuals is `{python} print(residuals.mean())`, and the RMSE is `{python} print(rmse)`.
+
+## Written Response
+
+X @ beta_hat represents the predicted outcome for observation based on the estimated beta values
+and the observation's predictor values. The residual mean should be near zero when an intercept is
+present because the difference between the observed response values and the predicted response
+values is close to zero when the predictions are accurate. RMSE summarizes how far a model’s
+predictions are from the actual observed response values, on average. X * beta_hat uses element-wise
+multiplication while X @ beta_hat uses matrix multiplication.
+
+# Part 4
+
+## QR Decomposition
+
+## SVD
+
+## Rank and Conditioning
+
+## Written Response
