@@ -187,8 +187,71 @@ multiplication while X @ beta_hat uses matrix multiplication.
 
 ## QR Decomposition
 
+``` {python}
+Q, R = np.linalg.qr(X)
+```
+
+Q has 4 dimensions with 130 elements (`{python} Q.shape`) while R has 4 dimensions with 4
+elements (`{python} R.shape`).
+
+Multiplying Q and R results in the design matrix (X), and the dimensions of Q are orthogonal.
+
+``` {python}
+np.allclose(Q @ R, X)
+```
+
+``` {python}
+np.allclose(Q.T @ Q, np.eye(Q.shape[1]))
+```
+
 ## SVD
+
+``` {python}
+U, s, Vt = np.linalg.svd(X, full_matrices=False)
+```
+
+U is 4-dimensional with 130 elements (`{python} U.shape`), s is 1-dimentional with 4 elements
+(`{python} s.shape`), and Vt is 4-dimensional with 4 elements (`{python} Vt.shape`).
+
+The singular values are `{python} print(s[0].round(2))`, `{python} print(s[1].round(2))`,
+`{python} print(s[2].round(2))`, and `{python} print(s[3].round(2))`.
+
+``` {python}
+X_reconstructed = (U @ np.diag(s) @ Vt)
+```
+
+The reconstructed design matrix (reconstructed X) is similar to the original design matrix (X)
+that was created in Part 2.
+
+``` {python}
+np.allclose(X_reconstructed, X)
+```
 
 ## Rank and Conditioning
 
+The rank of the design matrix (X) is `{python} print(np.linalg.matrix_rank(X))`. The largest
+singular value is about `{python} print(np.linalg.cond(X).round(2))` times the smallest which
+means that the design matrix (X) is well conditioned.
+
+``` {python}
+X_raw = np.column_stack([np.ones(len(predictors)), predictors])
+```
+
+The largest singular value of the raw design matrix (raw X) is about
+`{python} print(np.linalg.cond(X_raw).round(2))` times the smallest which means that the raw
+design matric (raw X) is not well conditioned.
+
 ## Written Response
+
+Q @ R ≈ X verifies that Q and R really are a decomposition of X, and Q.T @ Q ≈ I verifies that
+the dimensions of Q are orthogonal. Each singular value measures how much the design matrix (X)
+stretched the input in one direction. A large condition number suggests that the design matrix is
+not well conditioned because X stretches by a different amount in each direction. The condition
+number did change after standardization. Mismatched measurement scales can inflate the raw
+condition number because singular values are based on each column/dimension's units. Because the
+condition number of the standardized design matrix was low
+(`{python} print(np.linalg.cond(X).round(2))`), it does not show evidence of severe redundancy
+among predictors.
+
+# Part 5
+
