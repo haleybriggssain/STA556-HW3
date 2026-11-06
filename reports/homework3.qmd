@@ -97,11 +97,11 @@ Z.mean(axis=0)
 Z.std(axis=0)
 ```
 
-Mean across the predictors = `{python} f"{Z.mean(axis=0)[0]:.2f}`,
-`{python} f"{Z.mean(axis=0)[1]:.2f}`, `{python} f"{Z.mean(axis=0)[2]:.2f}`
+Mean across the predictors = `{python} f"{Z.mean(axis=0)[0]:.2f}"`,
+`{python} f"{Z.mean(axis=0)[1]:.2f}"`, `{python} f"{Z.mean(axis=0)[2]:.2f}"`
 
-Standard deviation across the predictors: `{python} f"{Z.std(axis=0)[0]:.2f}`,
-`{python} f"{Z.std(axis=0)[1]:.2f}`, `{python} f"{Z.std(axis=0)[2]:.2f}`
+Standard deviation across the predictors: `{python} f"{Z.std(axis=0)[0]:.2f}"`,
+`{python} f"{Z.std(axis=0)[1]:.2f}"`, `{python} f"{Z.std(axis=0)[2]:.2f}"`
 
 ### Construct the Design matrix
 
@@ -139,7 +139,7 @@ The 'y' array (an array with the response values (price in thousands) for each o
 y.shape
 ```
 
-The matrix rank of X is `{python} f"{np.linalg.matrix_rank(X)}`.
+The matrix rank of X is `{python} f"{np.linalg.matrix_rank(X)}"`.
 
 ``` {python}
 np.linalg.matrix_rank(X)
@@ -178,15 +178,15 @@ beta_hat
 ```
 
 Estimated Coefficients:
-Intercept coefficient = `{python} f"{beta_hat[0].2f}`
+Intercept coefficient = `{python} f"{beta_hat[0].2f}"`
 
-size_sqft coefficient = `{python} f"{beta_hat[1].2f}`
+size_sqft coefficient = `{python} f"{beta_hat[1].2f}"`
 
-bedrooms coefficient = `{python} f"{beta_hat[2].2f}`
+bedrooms coefficient = `{python} f"{beta_hat[2].2f}"`
 
-age_years coefficient = `{python} f"{beta_hat[3].2f}`
+age_years coefficient = `{python} f"{beta_hat[3].2f}"`
 
-size_sqft has the largest absolute value coefficient (`{python} f"{beta_hat[1].2f}`).
+size_sqft has the largest absolute value coefficient (`{python} f"{beta_hat[1].2f}"`).
 
 ### Calculate Fitted Values and Residuals
 
@@ -269,8 +269,8 @@ s.shape
 Vt.shape
 ```
 
-The singular values are `{python} f"{s[0].2f}`, `{python} f"{s[1].2f}`, `{python} f"{s[2].2f}`,
-and `{python} f"{s[3].2f}`.
+The singular values are `{python} f"{s[0].2f}"`, `{python} f"{s[1].2f}"`, `{python} f"{s[2].2f}"`,
+and `{python} f"{s[3].2f}"`.
 
 ``` {python}
 s
@@ -289,8 +289,8 @@ np.allclose(X_reconstructed, X)
 
 ## Rank and Conditioning
 
-The rank of the design matrix (X) is `{python} f"{np.linalg.matrix_rank(X)}`. The largest
-singular value is about `{python} f"{np.linalg.cond(X).2f}` times the smallest which
+The rank of the design matrix (X) is `{python} f"{np.linalg.matrix_rank(X)}"`. The largest
+singular value is about `{python} f"{np.linalg.cond(X).2f}"` times the smallest which
 means that the design matrix (X) is well conditioned.
 
 ``` {python}
@@ -302,7 +302,7 @@ X_raw = np.column_stack([np.ones(len(predictors)), predictors])
 ```
 
 The largest singular value of the raw design matrix (raw X) is about
-`{python} f"{np.linalg.cond(X_raw).2f}` times the smallest which means that the raw
+`{python} f"{np.linalg.cond(X_raw).2f}"` times the smallest which means that the raw
 design matric (raw X) is not well conditioned.
 
 ``` {python}
@@ -318,7 +318,7 @@ not well conditioned because X stretches by a different amount in each direction
 number did change after standardization. Mismatched measurement scales can inflate the raw
 condition number because singular values are based on each column/dimension's units. Because the
 condition number of the standardized design matrix was low
-(`{python} f"{np.linalg.cond(X).2f}`), it does not show evidence of severe redundancy
+(`{python} f"{np.linalg.cond(X).2f}"`), it does not show evidence of severe redundancy
 among predictors.
 
 # Part 5
