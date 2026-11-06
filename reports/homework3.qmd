@@ -154,11 +154,12 @@ predictors.shape
 
 ## Written Response
 
-X and y must have compatable shapes because they both represent the observed variable values
-(response variable values in y and predictor variable values in X) as elements, so the number of
-observations (number of elements) must match between X and y. The intercept column is necessary
+X and y must have compatable shapes because each row of X holds one observation's predictors and
+each entry of y is that observation's response, so X and y need the same number of rows in order
+to produce one fitted value per observation. The intercept column is necessary
 in X because X will be multiplied (as a matrix) by the beta matrix which includes the intercept
-beta (beta0). Standardizing the predictors puts all the predictors on a common scale without
+beta (beta0) which estimates the average response when every predictor is at its mean. Standardizing
+the predictors puts all the predictors on a common, comparable scale without
 altering their relationship to the response or their distribution. Broadcasting allows the code
 to complete element-wise subtraction of the mean from the predictor values (predictor - mean) and
 division of the standard deviation (/ sds) in order to complete the same calculations without a
@@ -207,11 +208,14 @@ The RMSE is `{python} f"{rmse:.3f}"` and the residual mean is `{python} f"{resid
 
 ## Written Response
 
-X @ beta_hat represents the predicted outcome for observation based on the estimated beta values
+X @ beta_hat is matrix multiplication that calculates the dot of each row of X and the beta_hat
+coefficients, and it
+represents the predicted outcome for each observation based on the estimated beta values
 and the observation's predictor values. The residual mean should be near zero when an intercept is
 present because least squares with an intercept forces residuals to be orthogonal to the column of ones.
-RMSE summarizes how far a model’s predictions are from the actual observed response values, on average. X * beta_hat uses element-wise
-multiplication while X @ beta_hat uses matrix multiplication.
+RMSE summarizes how far a model’s predictions are from the actual observed response values, on average.
+X * beta_hat uses element-wise multiplication that broadcasts beta_hat across columns of X
+while X @ beta_hat uses matrix multiplication.
 
 # Part 4
 
@@ -314,7 +318,7 @@ not well conditioned because X stretches by a different amount in each direction
 number did change after standardization. Mismatched measurement scales can inflate the raw
 condition number because singular values are based on each column/dimension's units. Because the
 condition number of the standardized design matrix was low
-(`{python} print(np.linalg.cond(X).round(2))`), it does not show evidence of severe redundancy
+(`{python} f"{np.linalg.cond(X).2f}`), it does not show evidence of severe redundancy
 among predictors.
 
 # Part 5
