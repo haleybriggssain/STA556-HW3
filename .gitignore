@@ -1,0 +1,7 @@
+/.quarto/
+.venv/
+*.quarto_ipynb
+*.deb
+*.deb
+.venv/
+*.quarto_ipynb

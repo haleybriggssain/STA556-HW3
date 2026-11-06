@@ -10,19 +10,21 @@ jupyter: python3
 ## 1.1 Introduction
 
 The dataset, 'housing', contains the predictors 'size_sqft', 'bedrooms', and 'age_years'
-and the response variable 'price-thousands'. The goal is to fit and diagnose a linear model
-that explains the price of houses based on the three predictors using matrix computation.
+and the response variable 'price_thousands'. The goal is to fit and diagnose a linear model
+that models the price of houses based on the three predictors using matrix computation.
 
 ## 1.2 Data Inspection and Validation
 
 ```{python}
 import pandas as pd
+from pathlib import Path
+import numpy as np
 ```
 
 ### Load the CSV
 
 ```{python}
-DATA_DIR = Path("../data")
+DATA_DIR = Path("data")
 
 df = pd.read_csv(DATA_DIR / "raw" / "housing.csv")
 ```
@@ -36,7 +38,8 @@ df.head()
 ```
 
 Inspect the number of rows and the number of columns contained in the dataset (number
-of rows, number of columns). There are 130 rows and 5 columns (`{python} df.shape`).
+of rows, number of columns). There are '{python} df.shape[0]` rows and `{python} df.shape[1]`
+columns (`{python} df.shape`).
 
 ``` {python}
 df.shape
@@ -66,8 +69,8 @@ df["id"].is_unique
 
 ## Written Response
 
-There are a total number of 130 observations with 5 columns that include 3 explanatory
-variables, 1 response variable, and 1 identifier column. There are 4 variables excluding the
+There are a total number of `{python} df.shape[0]` observations with `{python} df.shape[1]`
+columns that include 3 explanatory variables, 1 response variable, and 1 identifier column. There are 4 variables excluding the
 identifier column. There are no missing values, and all the IDs are unique.
 
 # Part 2
@@ -86,8 +89,19 @@ sds = predictors.std(axis=0)
 Z = (predictors- means) / sds
 ```
 
-Mean across the predictors = `{python} print(Z.mean(axis=0))`
-Standard deviation across the predictors: `{python} print(Z.std(axis=0))`
+``` {python}
+Z.mean(axis=0)
+```
+
+``` {python}
+Z.std(axis=0)
+```
+
+Mean across the predictors = `{python} f"{Z.mean(axis=0)[0]:.2f}`,
+`{python} f"{Z.mean(axis=0)[1]:.2f}`, `{python} f"{Z.mean(axis=0)[2]:.2f}`
+
+Standard deviation across the predictors: `{python} f"{Z.std(axis=0)[0]:.2f}`,
+`{python} f"{Z.std(axis=0)[1]:.2f}`, `{python} f"{Z.std(axis=0)[2]:.2f}`
 
 ### Construct the Design matrix
 
@@ -96,34 +110,36 @@ X = np.column_stack([np.ones(len(Z)), Z])
 ```
 
 The 'predictors' array (an array containing the values of each of the three explanatory variables
-for each observation) is 3-dimensional with 130 elements (`{python} predictors.shape`).
+for each observation) has `{python} predictors.shape[1]` columns (predictors) and `{python} predictors.shape[0]`
+rows (observations) (`{python} predictors.shape`).
 
 ``` {python}
 predictors.shape
 ```
 
 The 'Z' array (an array containing the Z-scores of each explanatory variable for each observation)
-also is 3-dimensional with 130 elements (`{python} Z.shape`).
+that also has `{python} Z.shape[1]` columns and `{python} Z.shape[0]` rows (`{python} Z.shape`).
 
 ``` {python}
 Z.shape
 ```
 
-The 'X' array (an array that acts as the design matrix for the computations) is 4-dimensional
-with 130 elements (`{python} X.shape`). The extra dimension only contains 1s.
+The 'X' array (an array that acts as the design matrix for the computations) has `{python} X.shape[1]`
+ columns and `{python} X.shape[0]` rows (`{python} X.shape`). The extra column is an intercept columns
+ that only contains 1s.
 
 ``` {python}
 X.shape
 ```
 
 The 'y' array (an array with the response values (price in thousands) for each observation) is
-1-dimensional with 130 elements (`{python} y.shape`).
+1-dimensional with `{python} y.shape[0]` entries (`{python} y.shape`).
 
 ``` {python}
 y.shape
 ```
 
-The matrix rank of X is `{python} print(np.linalg.matrix_rank(X))`.
+The matrix rank of X is `{python} f"{np.linalg.matrix_rank(X)}`.
 
 ``` {python}
 np.linalg.matrix_rank(X)
@@ -156,13 +172,20 @@ loop.
 beta_hat, *_ = np.linalg.lstsq(X, y, rcond = None)
 ```
 
-Estimated Coefficients:
-Intercept coefficient = `{python} print(beta_hat[0])`
-size_sqft coefficient = `{python} print(beta_hat[1])`
-bedrooms coefficient = `{python} print(beta_hat[2])`
-age_years coefficient = `{python} print(beta_hat[3])`
+``` {python}
+beta_hat
+```
 
-size_sqft has the largest absolute value coefficient (`{python} print(beta_hat[1])`).
+Estimated Coefficients:
+Intercept coefficient = `{python} f"{beta_hat[0].2f}`
+
+size_sqft coefficient = `{python} f"{beta_hat[1].2f}`
+
+bedrooms coefficient = `{python} f"{beta_hat[2].2f}`
+
+age_years coefficient = `{python} f"{beta_hat[3].2f}`
+
+size_sqft has the largest absolute value coefficient (`{python} f"{beta_hat[1].2f}`).
 
 ### Calculate Fitted Values and Residuals
 
@@ -172,15 +195,22 @@ residuals = y- fitted
 rmse = np.sqrt(np.mean(residuals ** 2))
 ```
 
-The mean of the residuals is `{python} print(residuals.mean())`, and the RMSE is `{python} print(rmse)`.
+``` {python}
+rmse
+```
+
+``` {python}
+residuals.mean()
+```
+
+The RMSE is `{python} f"{rmse:.3f}"` and the residual mean is `{python} f"{residuals.mean():.2e}"`.
 
 ## Written Response
 
 X @ beta_hat represents the predicted outcome for observation based on the estimated beta values
 and the observation's predictor values. The residual mean should be near zero when an intercept is
-present because the difference between the observed response values and the predicted response
-values is close to zero when the predictions are accurate. RMSE summarizes how far a model’s
-predictions are from the actual observed response values, on average. X * beta_hat uses element-wise
+present because least squares with an intercept forces residuals to be orthogonal to the column of ones.
+RMSE summarizes how far a model’s predictions are from the actual observed response values, on average. X * beta_hat uses element-wise
 multiplication while X @ beta_hat uses matrix multiplication.
 
 # Part 4
@@ -191,10 +221,19 @@ multiplication while X @ beta_hat uses matrix multiplication.
 Q, R = np.linalg.qr(X)
 ```
 
-Q has 4 dimensions with 130 elements (`{python} Q.shape`) while R has 4 dimensions with 4
-elements (`{python} R.shape`).
+Q has `{python} Q.shape[1]' columns and `{python} Q.shape[0]` rows (`{python} Q.shape`)
+while R is a square matrix with `{python} R.shape[1]` columns and `{python} R.shape[0]` rows
+(`{python} R.shape`).
 
-Multiplying Q and R results in the design matrix (X), and the dimensions of Q are orthogonal.
+``` {python}
+Q.shape
+```
+
+``` {python}
+R.shape
+```
+
+Multiplying Q and R results in the design matrix (X), and the columns of Q are orthogonal.
 
 ``` {python}
 np.allclose(Q @ R, X)
@@ -210,11 +249,28 @@ np.allclose(Q.T @ Q, np.eye(Q.shape[1]))
 U, s, Vt = np.linalg.svd(X, full_matrices=False)
 ```
 
-U is 4-dimensional with 130 elements (`{python} U.shape`), s is 1-dimentional with 4 elements
-(`{python} s.shape`), and Vt is 4-dimensional with 4 elements (`{python} Vt.shape`).
+U has `{python} U.shape` columns and `{python} U.shape[0]` rows (`{python} U.shape`),
+s is a 1-dimentional array with `{python} s.shape[0]` singular values (`{python} s.shape`),
+and Vt has `{python} Vt.shape[1]` columns and `{python} Vt.shape[0]` rows (`{python} Vt.shape`).
 
-The singular values are `{python} print(s[0].round(2))`, `{python} print(s[1].round(2))`,
-`{python} print(s[2].round(2))`, and `{python} print(s[3].round(2))`.
+``` {python}
+U.shape
+```
+
+``` {python}
+s.shape
+```
+
+``` {python}
+Vt.shape
+```
+
+The singular values are `{python} f"{s[0].2f}`, `{python} f"{s[1].2f}`, `{python} f"{s[2].2f}`,
+and `{python} f"{s[3].2f}`.
+
+``` {python}
+s
+```
 
 ``` {python}
 X_reconstructed = (U @ np.diag(s) @ Vt)
@@ -229,17 +285,25 @@ np.allclose(X_reconstructed, X)
 
 ## Rank and Conditioning
 
-The rank of the design matrix (X) is `{python} print(np.linalg.matrix_rank(X))`. The largest
-singular value is about `{python} print(np.linalg.cond(X).round(2))` times the smallest which
+The rank of the design matrix (X) is `{python} f"{np.linalg.matrix_rank(X)}`. The largest
+singular value is about `{python} f"{np.linalg.cond(X).2f}` times the smallest which
 means that the design matrix (X) is well conditioned.
+
+``` {python}
+np.linalg.cond(X)
+```
 
 ``` {python}
 X_raw = np.column_stack([np.ones(len(predictors)), predictors])
 ```
 
 The largest singular value of the raw design matrix (raw X) is about
-`{python} print(np.linalg.cond(X_raw).round(2))` times the smallest which means that the raw
+`{python} f"{np.linalg.cond(X_raw).2f}` times the smallest which means that the raw
 design matric (raw X) is not well conditioned.
+
+``` {python}
+np.linalg.cond(X_raw)
+```
 
 ## Written Response
 
@@ -255,3 +319,23 @@ among predictors.
 
 # Part 5
 
+Clean execution is necessary for a computational report because the code must run seamlessly
+from top to bottom in order for the report to work properly. A properly ran report proves that
+the results actually came from the code provided. Reusable code should not depend on hidden
+notebook state because code can be ran out of order, and code can be altered without being ran
+from top to bottom. As a result, some code can not be reproducible when ran chronologically.
+Additionally, variables defined in a deleted or edited cell still exist in memory, so future code
+can work only because of code that was previously written. The main reason why np.linalg.lstsq()
+is preferred over manual computation is because manually computing inverse matrices takes up a
+lot of time and can produce numerical error. The function np.linalg.lstsq() solves the
+optimization without taking the time to calculate an inverse matrix which saves time and reduces
+error. Using a check like np.allclose() is preferable to checking exact equality for QR and SVD
+because rounded values could consider the deconstructed values to be different than the original
+(not decontructed) values eventhough they are fundamentally equal. In my analysis, the raw matrix
+had a very large condition number while the standardized one was reasonable. The condition number
+comparison taught me that numerical data can alter drastically when scale changes. It showed me
+how important it is to explicitly state the scales of variables, so that the analysis can be
+reproduced. I learned that making a detailed report is very useful for reproducibility because
+the person coding is able to provide indepth details about each piece of code in order to tell
+a story. To apply this to the final project, I will restart and run all cells before submitting
+or making conclusions.
